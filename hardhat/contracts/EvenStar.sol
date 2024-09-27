@@ -19,15 +19,17 @@ contract EvenStar {
     User[] public allUsers;
     mapping(address => User) public hasRegistered; 
     mapping(uint256 => User) public registeredUserID; 
+    mapping(address => uint256) public userBalance;
 
     struct Program {
         uint256 id;
         string title;
         string desc;
-        uint256 startDate;
-        uint256 startTime;
-        uint256 closeDate;
-        uint256 duration;
+        uint256 date;
+        uint256 time;
+        string location;
+        string duration;
+        string url;
         uint256 ticket;  
         bool isActive;
         address creator;
@@ -41,6 +43,13 @@ contract EvenStar {
     mapping(string => Program) public programsTitle; 
     mapping(uint256 => address[]) public programAttendees;
     mapping(uint256 => bool) public programCompleted; 
+
+
+    event UserRegistered(address indexed userAddress, uint256 indexed userId);
+    event EventCreated(uint256 indexed eventId, string indexed title, address indexed creator);
+    event EventSignup(uint256 indexed eventId, address indexed userAddress);
+    event EventArchived(uint256 indexed eventId);
+    event EventRemoved(uint256 indexed eventId);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function");
@@ -60,26 +69,33 @@ contract EvenStar {
         allUsers.push(newUser);
         hasRegistered[msg.sender] = newUser;
         registeredUserID[id] = newUser;
+
+        emit UserRegistered(msg.sender, id);
     }
 
     function createEvent(
         string memory _title, 
         string memory _desc, 
-        uint256 _startDate, 
-        uint256 _startTime, 
-        uint256 _closeDate, 
-        uint256 _duration,
+        uint256 _date, 
+        uint256 _time, 
+        string memory _location, 
+        string memory _duration,
+        string memory _url,
         uint256 _ticket
     ) external {
         uint256 id = allPrograms.length;
-        Program memory newProgram = Program(id, _title, _desc, _startDate, _startTime, _closeDate, _duration, _ticket, true, msg.sender);
+        Program memory newProgram = Program(id, _title, _desc, _date, _time, _location, _duration, _url, _ticket, true, msg.sender);
         allPrograms.push(newProgram);
         registeredPrograms[id] = newProgram;
         programsTitle[_title] = newProgram;
+
+        emit EventCreated(id, _title, msg.sender);
+
     }
 
     // User signup for event with ERC20 token payment
     function eventSignup(uint256 id) external {
+        require(id != 0, "Invalid Id");
         Program storage program = allPrograms[id];
 
         require(program.isActive, "Event is not active");
@@ -96,8 +112,10 @@ contract EvenStar {
         // Add user to the attendees list
         programAttendees[id].push(msg.sender);
     }
+    
 
     function archiveEvent(uint256 id) external onlyOwner {
+
         Program storage selectedProgram = allPrograms[id];
         require(selectedProgram.isActive, "Program is not active");
         archivePrograms.push(selectedProgram);
@@ -123,28 +141,31 @@ contract EvenStar {
         return registeredUserID[id];
     }
 
-function proofOfAttendance(uint256 id) private {
-    require(id < allPrograms.length, "Invalid event ID");
-    require(programCompleted[id], "Event is still ongoing");
+    function proofOfAttendance(uint256 id) internal {
+        require(id != 0, "Invalid Id");
+        require(id < allPrograms.length, "Invalid event ID");
+        require(programCompleted[id], "Event is still ongoing");
 
-    // Check if the user attended the event
-    bool isAttendee = false;
-    for (uint256 i = 0; i < programAttendees[id].length; i++) {
-        if (programAttendees[id][i] == msg.sender) {
-            isAttendee = true;
-            break;
+        // Check if the user attended the event
+        bool isAttendee = false;
+        for (uint256 i = 0; i < programAttendees[id].length; i++) {
+            if (programAttendees[id][i] == msg.sender) {
+                isAttendee = true;
+                break;
+            }
         }
+
+        require(isAttendee, "You did not attend this event");
+
+        // Mint Proof of Attendance (POA) to the user
+        IERC721 evenStarToken = IERC721(evenStarPOA);
+        
+        // Assuming evenStarPOA has a 'mint' function with signature: `mint(address to, uint256 tokenId)`
+
+        (bool success, bytes memory data) = evenStarPOA.call(abi.encodeWithSignature("mint(address,uint256)", msg.sender, id));
+
+        require(success && (data.length == 0 || abi.decode(data, (bool))), "Minting failed");
     }
-
-    require(isAttendee, "You did not attend this event");
-
-    // Mint Proof of Attendance (POA) to the user
-    IERC721 evenStarToken = IERC721(evenStarPOA);
-    
-    (bool success, bytes memory data) = evenStarPOA.call(abi.encodeWithSignature("mint(address,uint256)", msg.sender, id));
-
-    require(success && (data.length == 0 || abi.decode(data, (bool))), "Minting failed");
-}
 
 
     // Search for events with no ticket price
@@ -192,4 +213,22 @@ function proofOfAttendance(uint256 id) private {
 
         return paidEvents;
     }
+
+    function getUserBalance(address _address) external  onlyOwner view returns(uint256){
+        require(_address != address(0), "Address zero detected");
+        return userBalance[_address];
+    }
+
+    function getUserBalance() external view returns(uint256){
+        require(msg.sender != address(0), "Address zero detected");
+        return userBalance[msg.sender];
+    }
+
+    function checkContractBalance() external onlyOwner view returns(uint256){
+        return contractBalance;
+    }
+
+    function updateProgram()external{
+
+    } 
 }
