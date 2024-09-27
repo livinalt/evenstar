@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.24;
+pragma solidity 0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol"; 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
 
 contract EvenStar {
+    
     address public owner;
     address public evenStarPOA; 
     address public paymentToken;  
@@ -64,6 +65,7 @@ contract EvenStar {
 
     function registerUser() external {
         require(!hasRegistered[msg.sender].isRegistered, "User already registered");
+
         uint256 id = allUsers.length + 1;
         User memory newUser = User(id, msg.sender, true);
         allUsers.push(newUser);
@@ -93,7 +95,36 @@ contract EvenStar {
 
     }
 
-    // User signup for event with ERC20 token payment
+    function updateProgram(
+    uint256 id, 
+    string memory _title, 
+    string memory _desc, 
+    uint256 _date, 
+    uint256 _time, 
+    string memory _location, 
+    string memory _duration, 
+    string memory _url, 
+    uint256 _ticket
+) external {
+    require(id < allPrograms.length, "Invalid program ID");
+
+    Program storage program = allPrograms[id];
+    
+    require(program.creator == msg.sender || msg.sender == owner, "You are not the creator of this event");
+
+    program.title = _title;
+    program.desc = _desc;
+    program.date = _date;
+    program.time = _time;
+    program.location = _location;
+    program.duration = _duration;
+    program.url = _url;
+    program.ticket = _ticket;
+
+    programsTitle[_title] = program;
+}
+
+
     function eventSignup(uint256 id) external {
         require(id != 0, "Invalid Id");
         Program storage program = allPrograms[id];
@@ -109,7 +140,6 @@ contract EvenStar {
 
         contractBalance += contractShare;
 
-        // Add user to the attendees list
         programAttendees[id].push(msg.sender);
     }
     
@@ -117,7 +147,9 @@ contract EvenStar {
     function archiveEvent(uint256 id) external onlyOwner {
 
         Program storage selectedProgram = allPrograms[id];
+
         require(selectedProgram.isActive, "Program is not active");
+
         archivePrograms.push(selectedProgram);
         isArchived[id] = true;
         selectedProgram.isActive = false;
@@ -125,15 +157,19 @@ contract EvenStar {
 
     function removeEvent(uint256 id) external onlyOwner {
         require(id < allPrograms.length, "Invalid program ID");
+
         delete allPrograms[id];
     }
 
     function searchEvent(uint256 id, string memory _title) external view returns (Program memory) {
+
         if (id < allPrograms.length && allPrograms[id].id == id) {
             return allPrograms[id];
+
         } else if (bytes(_title).length > 0) {
             return programsTitle[_title];
         }
+
         revert("Event not found");
     }
 
@@ -146,7 +182,6 @@ contract EvenStar {
         require(id < allPrograms.length, "Invalid event ID");
         require(programCompleted[id], "Event is still ongoing");
 
-        // Check if the user attended the event
         bool isAttendee = false;
         for (uint256 i = 0; i < programAttendees[id].length; i++) {
             if (programAttendees[id][i] == msg.sender) {
@@ -157,18 +192,14 @@ contract EvenStar {
 
         require(isAttendee, "You did not attend this event");
 
-        // Mint Proof of Attendance (POA) to the user
         IERC721 evenStarToken = IERC721(evenStarPOA);
         
-        // Assuming evenStarPOA has a 'mint' function with signature: `mint(address to, uint256 tokenId)`
-
         (bool success, bytes memory data) = evenStarPOA.call(abi.encodeWithSignature("mint(address,uint256)", msg.sender, id));
 
         require(success && (data.length == 0 || abi.decode(data, (bool))), "Minting failed");
     }
 
 
-    // Search for events with no ticket price
     function searchFreeEvents() external view returns (Program[] memory) {
         uint256 freeEventCount = 0;
 
@@ -191,7 +222,6 @@ contract EvenStar {
         return freeEvents;
     }
 
-    // Search for events with ticket price
     function searchPaidEvents() external view returns (Program[] memory) {
         uint256 paidEventCount = 0;
 
