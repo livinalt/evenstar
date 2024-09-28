@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.20;
+pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol"; 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
 
 contract EvenStar {
-    
-    address public owner;
-    address public evenStarPOA; 
-    address public paymentToken;  
-    uint256 public contractBalance; 
+    address owner;
+    address evenStarPOA; 
+    address paymentToken;  
+    uint256 contractBalance; 
 
     struct User {
         uint256 id;
@@ -17,10 +16,10 @@ contract EvenStar {
         bool isRegistered; 
     }
 
-    User[] public allUsers;
-    mapping(address => User) public hasRegistered; 
-    mapping(uint256 => User) public registeredUserID; 
-    mapping(address => uint256) public userBalance;
+    User[] allUsers;
+    mapping(address => User) hasRegistered; 
+    mapping(uint256 => User) registeredUserID; 
+    mapping(address => uint256) userBalance;
 
     struct Program {
         uint256 id;
@@ -36,14 +35,14 @@ contract EvenStar {
         address creator;
     }
 
-    Program[] public allPrograms;
-    Program[] public archivePrograms;
+    Program[] allPrograms;
+    Program[] archivePrograms;
 
-    mapping(uint256 => bool) public isArchived; 
-    mapping(uint256 => Program) public registeredPrograms; 
-    mapping(string => Program) public programsTitle; 
-    mapping(uint256 => address[]) public programAttendees;
-    mapping(uint256 => bool) public programCompleted; 
+    mapping(uint256 => bool) isArchived; 
+    mapping(uint256 => Program) registeredPrograms; 
+    mapping(string => Program) programsTitle; 
+    mapping(uint256 => address[]) programAttendees;
+    mapping(uint256 => bool) programCompleted; 
 
 
     event UserRegistered(address indexed userAddress, uint256 indexed userId);
@@ -65,7 +64,6 @@ contract EvenStar {
 
     function registerUser() external {
         require(!hasRegistered[msg.sender].isRegistered, "User already registered");
-
         uint256 id = allUsers.length + 1;
         User memory newUser = User(id, msg.sender, true);
         allUsers.push(newUser);
@@ -107,7 +105,6 @@ contract EvenStar {
     uint256 _ticket
 ) external {
     require(id < allPrograms.length, "Invalid program ID");
-
     Program storage program = allPrograms[id];
     
     require(program.creator == msg.sender || msg.sender == owner, "You are not the creator of this event");
@@ -147,9 +144,7 @@ contract EvenStar {
     function archiveEvent(uint256 id) external onlyOwner {
 
         Program storage selectedProgram = allPrograms[id];
-
         require(selectedProgram.isActive, "Program is not active");
-
         archivePrograms.push(selectedProgram);
         isArchived[id] = true;
         selectedProgram.isActive = false;
@@ -157,19 +152,15 @@ contract EvenStar {
 
     function removeEvent(uint256 id) external onlyOwner {
         require(id < allPrograms.length, "Invalid program ID");
-
         delete allPrograms[id];
     }
 
     function searchEvent(uint256 id, string memory _title) external view returns (Program memory) {
-
         if (id < allPrograms.length && allPrograms[id].id == id) {
             return allPrograms[id];
-
         } else if (bytes(_title).length > 0) {
             return programsTitle[_title];
         }
-
         revert("Event not found");
     }
 
@@ -177,7 +168,7 @@ contract EvenStar {
         return registeredUserID[id];
     }
 
-    function proofOfAttendance(uint256 id) internal {
+    function proofOfAttendance(uint256 id) external {
         require(id != 0, "Invalid Id");
         require(id < allPrograms.length, "Invalid event ID");
         require(programCompleted[id], "Event is still ongoing");
@@ -200,6 +191,7 @@ contract EvenStar {
     }
 
 
+    // Search for events with no ticket price
     function searchFreeEvents() external view returns (Program[] memory) {
         uint256 freeEventCount = 0;
 
@@ -222,6 +214,7 @@ contract EvenStar {
         return freeEvents;
     }
 
+    // Search for events with ticket price
     function searchPaidEvents() external view returns (Program[] memory) {
         uint256 paidEventCount = 0;
 
@@ -258,7 +251,4 @@ contract EvenStar {
         return contractBalance;
     }
 
-    function updateProgram()external{
-
-    } 
 }
