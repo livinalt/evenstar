@@ -1,3 +1,4 @@
+import { SearchInput } from "@/components/ui/input";
 import Heading1 from "@/components/ui/typography/heading1";
 import Paragraph from "@/components/ui/typography/paragraph";
 
@@ -14,14 +15,16 @@ export default function Home() {
         aria-hidden="true"
       />
 
-      <section className="relative z-10 grid h-[620px] place-items-center">
-        <div className="w-[45%] text-center">
+      <section className="relative z-10 flex h-[620px] flex-col items-center justify-center">
+        <div className="mb-8 w-[45%] text-center">
           <Heading1 className="leading-[87px]">Evenstar Events </Heading1>
           <Paragraph>
             Discover, Attend, and Pay for Events Seamlessly. Empower Event
             Creators with Smart Contracts and Secure Payments
           </Paragraph>
         </div>
+
+        <SearchInput />
       </section>
     </main>
   );
