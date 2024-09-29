@@ -1,10 +1,15 @@
+import { EVENT_ITEMS } from "@/lib/constants";
+import { NewEventCta } from "@/components/events/new-event-cta";
 import { PopularEventsSection } from "@/components/events/popular-events-section";
 import { Categories } from "@/components/homepage/categories";
 import { SearchInput } from "@/components/ui/input";
 import Heading1 from "@/components/ui/typography/heading1";
 import Paragraph from "@/components/ui/typography/paragraph";
+import { RecentEvents } from "@/components/events/recent-events";
 
 export default function Home() {
+  const recentEvents = EVENT_ITEMS.slice(0, 3);
+
   return (
     <main className="min-h-screen w-full lg:min-h-[620px] lg:min-w-[1280px]">
       <section className="relative z-10 flex h-[620px] flex-col items-center justify-center">
@@ -31,7 +36,11 @@ export default function Home() {
 
       <Categories />
 
-      <PopularEventsSection />
+      <PopularEventsSection data={EVENT_ITEMS} />
+
+      <NewEventCta />
+
+      <RecentEvents data={recentEvents} />
     </main>
   );
 }
