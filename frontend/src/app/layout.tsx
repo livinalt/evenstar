@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { DesktopNavbar } from "@/components/navbar/deskop-navbar";
+import { Footer } from "@/components/navbar/footer";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={`${nunito.className} antialiased`}>
         <DesktopNavbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

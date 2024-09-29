@@ -80,3 +80,26 @@ export const EVENT_ITEMS: IEventItem[] = [
     date: "NOV 28",
   },
 ];
+
+export const FOOTER_ITEMS: INavbar[] = [
+  {
+    title: "About Us",
+    href: "/about",
+  },
+  {
+    title: "Contact Us",
+    href: "/",
+  },
+  {
+    title: "FAQs",
+    href: "/",
+  },
+  {
+    title: "Terms of Service",
+    href: "/",
+  },
+  {
+    title: "Privacy Policy",
+    href: "/",
+  },
+];
