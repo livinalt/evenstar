@@ -16,4 +16,6 @@ export interface IEventItem {
   size: string;
   cost: string;
   date: string;
+  eventUrl: string;
+  eventHost: string;
 }

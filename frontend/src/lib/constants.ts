@@ -33,6 +33,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
   {
     title: "Ethereum Foundation Meet up",
@@ -42,6 +44,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
   {
     title: "Ethereum Foundation Meet up",
@@ -51,6 +55,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
   {
     title: "Ethereum Foundation Meet up",
@@ -60,6 +66,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
   {
     title: "Ethereum Foundation Meet up",
@@ -69,6 +77,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
   {
     title: "Ethereum Foundation Meet up",
@@ -78,6 +88,8 @@ export const EVENT_ITEMS: IEventItem[] = [
     size: "100",
     cost: "free",
     date: "NOV 28",
+    eventUrl: "/events/1",
+    eventHost: "Sam Genji Wise",
   },
 ];
 
