@@ -9,7 +9,7 @@ const Heading2 = ({ children, className, ...props }: Props) => {
   return (
     <h2
       className={cn(
-        "text-2xl font-semibold tracking-tight text-white",
+        "text-[32px] font-semibold leading-[44px] tracking-tight text-white",
         className,
       )}
       {...props}
