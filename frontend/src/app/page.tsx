@@ -1,3 +1,4 @@
+import { PopularEventsSection } from "@/components/events/popular-events-section";
 import { Categories } from "@/components/homepage/categories";
 import { SearchInput } from "@/components/ui/input";
 import Heading1 from "@/components/ui/typography/heading1";
@@ -29,6 +30,8 @@ export default function Home() {
       </section>
 
       <Categories />
+
+      <PopularEventsSection />
     </main>
   );
 }
