@@ -1,5 +1,3 @@
-// This setup uses Hardhat Ignition to manage smart contract deployments.
-// Learn more about it at https://hardhat.org/ignition
 
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
@@ -14,6 +12,3 @@ const MockUSDTModule = buildModule("MockUSDTModule", (m) => {
 
 export default MockUSDTModule;
 
-// MockUSDTModule#MockUSDT - 0x2913ba4D9d925BC05006F529eEcb96D0BAd9C6D3
-
-// https://sepolia.scrollscan.com/address/0x2913ba4D9d925BC05006F529eEcb96D0BAd9C6D3#code
