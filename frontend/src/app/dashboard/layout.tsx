@@ -2,10 +2,10 @@ import { Sidebar } from "@/components/navbar/sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="flex min-h-screen pt-24">
-      {/* <Sidebar>{children}</Sidebar> */}
-      <Sidebar />
-      <>{children}</>
-    </main>
+    <Sidebar>
+      <main className="pt-24">
+        <section className="px-10 pt-[30px]">{children}</section>
+      </main>
+    </Sidebar>
   );
 }

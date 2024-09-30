@@ -6,25 +6,32 @@ import { INavbar } from "../../../types";
 import clsx from "clsx";
 import { SIDEBAR_ITEMS } from "@/lib/constants";
 
-export function Sidebar() {
+// export function Sidebar() {
+export function Sidebar({ children }: { children: React.ReactNode }) {
   const helpItem = {
     title: "Help",
     href: "/dasboard/account",
   };
-  return (
-    <aside className="h-screen w-[310px] overflow-y-auto bg-blue-2">
-      <nav className="flex h-full flex-col justify-between pb-24">
-        <ul className="space-y-4">
-          {SIDEBAR_ITEMS.map((item) => (
-            <li key={item.href}>
-              <NavItem item={item} />
-            </li>
-          ))}
-        </ul>
 
-        <NavItem item={helpItem} />
-      </nav>
-    </aside>
+  return (
+    <div className="grid min-h-screen w-full lg:grid-cols-[310px_1fr]">
+      <aside className="sticky top-0 h-screen bg-blue-2 pt-24">
+        <div className="flex h-full max-h-screen flex-col">
+          <nav className="flex flex-1 flex-col justify-between overflow-auto">
+            <ul className="space-y-[16px]">
+              {SIDEBAR_ITEMS.map((item) => (
+                <li key={item.title}>
+                  <NavItem item={item} />
+                </li>
+              ))}
+            </ul>
+
+            <NavItem item={helpItem} />
+          </nav>
+        </div>
+      </aside>
+      <>{children}</>
+    </div>
   );
 }
 
