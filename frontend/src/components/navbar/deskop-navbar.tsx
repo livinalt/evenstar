@@ -20,7 +20,7 @@ export function DesktopNavbar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-base font-medium text-[#414141] hover:text-blue-1 ${pathname.includes(item.href) && "text-blue-1 underline"}`}
+              className={`text-base font-medium text-[#414141] hover:text-blue-1 ${pathname.includes(item.href) && "text-blue-1"}`}
             >
               {item.title}
             </Link>
