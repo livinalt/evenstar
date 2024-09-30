@@ -20,7 +20,7 @@ export function EventsSectionWrapper({
       <Heading3 className="text-center text-[#282A31]">{title}</Heading3>
 
       <div
-        className={`mt-5 grid max-w-screen-xl grid-cols-3 gap-10 px-10 ${doubleRow ? "grid-rows-2" : "grid-rows-1"}`}
+        className={`mt-5 grid max-w-screen-xl mx-auto grid-cols-3 gap-10 px-10 ${doubleRow ? "grid-rows-2" : "grid-rows-1"}`}
       >
         {children}
       </div>
