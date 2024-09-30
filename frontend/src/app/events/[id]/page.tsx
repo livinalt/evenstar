@@ -6,14 +6,14 @@ import { Separator } from "@/components/ui/separator";
 import Heading2 from "@/components/ui/typography/heading2";
 import Heading3 from "@/components/ui/typography/heading3";
 import Paragraph from "@/components/ui/typography/paragraph";
-import { EVENT_ITEMS } from "@/lib/constants";
+import { dummyEvents } from "@/lib/data";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { id } = params;
 
-  const selectedEvent = EVENT_ITEMS[+id];
+  const selectedEvent = dummyEvents[+id];
 
-  const recentEvents = EVENT_ITEMS.slice(0, 3);
+  const recentEvents = dummyEvents.slice(0, 3);
 
   const { title } = selectedEvent;
 

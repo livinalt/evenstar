@@ -1,7 +1,7 @@
 import { EventItem } from "@/components/events/event-item";
 import { EventSearch } from "@/components/events/event-search";
 import Heading1 from "@/components/ui/typography/heading1";
-import { EVENT_ITEMS } from "@/lib/constants";
+import { dummyEvents } from "@/lib/data";
 
 export default function Page() {
   return (
@@ -15,7 +15,7 @@ export default function Page() {
             </Heading1>
 
             <div className="mt-10 grid grid-cols-3 grid-rows-2 gap-10">
-              {EVENT_ITEMS.map((item) => (
+              {dummyEvents.map((item) => (
                 <EventItem key={item.imageUrl} data={item} />
               ))}
             </div>

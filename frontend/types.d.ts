@@ -19,3 +19,9 @@ export interface IEventItem {
   eventUrl: string;
   eventHost: string;
 }
+
+export interface INotification {
+  imageUrl: string;
+  message: string;
+  description: string;
+}

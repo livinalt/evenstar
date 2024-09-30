@@ -1,4 +1,3 @@
-import { EVENT_ITEMS } from "@/lib/constants";
 import { NewEventCta } from "@/components/events/new-event-cta";
 import { PopularEventsSection } from "@/components/events/popular-events-section";
 import { Categories } from "@/components/homepage/categories";
@@ -6,9 +5,10 @@ import { SearchInput } from "@/components/ui/input";
 import Heading1 from "@/components/ui/typography/heading1";
 import Paragraph from "@/components/ui/typography/paragraph";
 import { RecentEvents } from "@/components/events/recent-events";
+import { dummyEvents } from "@/lib/data";
 
 export default function Home() {
-  const recentEvents = EVENT_ITEMS.slice(0, 3);
+  const recentEvents = dummyEvents.slice(0, 3);
 
   return (
     <main className="min-h-screen w-full lg:min-h-[620px] lg:min-w-[1280px]">
@@ -36,7 +36,7 @@ export default function Home() {
 
       <Categories />
 
-      <PopularEventsSection data={EVENT_ITEMS} />
+      <PopularEventsSection data={dummyEvents} />
 
       <NewEventCta />
 
