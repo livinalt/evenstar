@@ -48,6 +48,10 @@ export function EventSearch({ hasFilter }: Props) {
           <Heading2 className="text-[#282A31]">Block Event</Heading2>
           <SearchInput />
         </div>
+        <button
+          className="hidden"
+          onClick={() => setResultReady(false)}
+        ></button>
       </div>
 
       {hasFilter && (
