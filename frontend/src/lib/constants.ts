@@ -115,3 +115,8 @@ export const FOOTER_ITEMS: INavbar[] = [
     href: "/",
   },
 ];
+
+export const SIDEBAR_ITEMS: INavbar[] = [
+  { title: "Account", href: "/dashboard/account" },
+  { title: "Notification", href: "/dashboard/notification" },
+];
