@@ -3,6 +3,7 @@ pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol"; 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
+import "./IEvenStarPOA.sol";
 
 contract EvenStar {
     address owner;
@@ -28,7 +29,7 @@ contract EvenStar {
         uint256 date;
         uint256 time;
         string location;
-        string duration;
+        uint256 duration;
         string url;
         uint256 ticket;  
         bool isActive;
@@ -56,16 +57,19 @@ contract EvenStar {
         _;
     }
 
-    constructor(address _evenStarPOA, address _paymentToken) {
-        owner = msg.sender;
+    constructor(address _evenStarPOA, address _paymentToken, address _owner) {
+        owner = _owner;
         evenStarPOA = _evenStarPOA; 
         paymentToken = _paymentToken;
     }
 
     function registerUser() external {
         require(!hasRegistered[msg.sender].isRegistered, "User already registered");
+
         uint256 id = allUsers.length + 1;
+
         User memory newUser = User(id, msg.sender, true);
+
         allUsers.push(newUser);
         hasRegistered[msg.sender] = newUser;
         registeredUserID[id] = newUser;
@@ -79,11 +83,12 @@ contract EvenStar {
         uint256 _date, 
         uint256 _time, 
         string memory _location, 
-        string memory _duration,
+        uint256 _duration,
         string memory _url,
         uint256 _ticket
     ) external {
         uint256 id = allPrograms.length;
+
         Program memory newProgram = Program(id, _title, _desc, _date, _time, _location, _duration, _url, _ticket, true, msg.sender);
         allPrograms.push(newProgram);
         registeredPrograms[id] = newProgram;
@@ -100,11 +105,13 @@ contract EvenStar {
     uint256 _date, 
     uint256 _time, 
     string memory _location, 
-    string memory _duration, 
+    uint256 _duration, 
     string memory _url, 
     uint256 _ticket
 ) external {
+
     require(id < allPrograms.length, "Invalid program ID");
+
     Program storage program = allPrograms[id];
     
     require(program.creator == msg.sender || msg.sender == owner, "You are not the creator of this event");
@@ -123,28 +130,39 @@ contract EvenStar {
 
 
     function eventSignup(uint256 id) external {
-        require(id != 0, "Invalid Id");
-        Program storage program = allPrograms[id];
+    require(id != 0, "Invalid Id");
 
-        require(program.isActive, "Event is not active");
-        require(IERC20(paymentToken).balanceOf(msg.sender) >= program.ticket, "Insufficient token balance");
-        require(IERC20(paymentToken).transferFrom(msg.sender, address(this), program.ticket), "Token transfer failed");
+    Program storage program = allPrograms[id];
 
-        uint256 creatorShare = (program.ticket * 99) / 100;
-        uint256 contractShare = program.ticket - creatorShare;
+    require(program.isActive, "Event is not active");
+
+    if (program.ticket > 0) {
+        uint256 ticketWithDecimals = program.ticket * (10**18);
+
+        require(IERC20(paymentToken).balanceOf(msg.sender) >= ticketWithDecimals, "Insufficient token balance");
+        require(IERC20(paymentToken).transferFrom(msg.sender, address(this), ticketWithDecimals), "Token transfer failed");
+
+        uint256 creatorShare = (ticketWithDecimals * 99) / 100;
+        uint256 contractShare = ticketWithDecimals - creatorShare;
 
         require(IERC20(paymentToken).transfer(program.creator, creatorShare), "Transfer to creator failed");
 
         contractBalance += contractShare;
-
-        programAttendees[id].push(msg.sender);
     }
+
+    programAttendees[id].push(msg.sender);
+
+    emit EventSignup(id, msg.sender);
+}
+
     
 
     function archiveEvent(uint256 id) external onlyOwner {
 
         Program storage selectedProgram = allPrograms[id];
+
         require(selectedProgram.isActive, "Program is not active");
+
         archivePrograms.push(selectedProgram);
         isArchived[id] = true;
         selectedProgram.isActive = false;
@@ -152,15 +170,22 @@ contract EvenStar {
 
     function removeEvent(uint256 id) external onlyOwner {
         require(id < allPrograms.length, "Invalid program ID");
+
         delete allPrograms[id];
     }
 
     function searchEvent(uint256 id, string memory _title) external view returns (Program memory) {
         if (id < allPrograms.length && allPrograms[id].id == id) {
+
             return allPrograms[id];
-        } else if (bytes(_title).length > 0) {
+
+        } 
+        
+        else if (bytes(_title).length > 0) {
+
             return programsTitle[_title];
         }
+
         revert("Event not found");
     }
 
@@ -183,15 +208,11 @@ contract EvenStar {
 
         require(isAttendee, "You did not attend this event");
 
-        IERC721 evenStarToken = IERC721(evenStarPOA);
-        
-        (bool success, bytes memory data) = evenStarPOA.call(abi.encodeWithSignature("mint(address,uint256)", msg.sender, id));
+        IEvenStarPOA(evenStarPOA).transferTokenFromContract(msg.sender, id);
 
-        require(success && (data.length == 0 || abi.decode(data, (bool))), "Minting failed");
     }
 
 
-    // Search for events with no ticket price
     function searchFreeEvents() external view returns (Program[] memory) {
         uint256 freeEventCount = 0;
 
@@ -214,7 +235,6 @@ contract EvenStar {
         return freeEvents;
     }
 
-    // Search for events with ticket price
     function searchPaidEvents() external view returns (Program[] memory) {
         uint256 paidEventCount = 0;
 
