@@ -64,8 +64,8 @@ The contracts were deployed on Scroll Sepolia Testnet using the with Alchemy as 
    [View Contract](https://sepolia.scrollscan.com/address/0xF2fF218f44Ee31aE1dFb22104582c6a1045F429F#code)
 
 3. **EvenStar**  
-   Address: `0xBf448C4565D44b4BF0A9BeEB89e4d5c71487f4A8`  
-   [View Contract](https://sepolia.scrollscan.com/address/0xBf448C4565D44b4BF0A9BeEB89e4d5c71487f4A8#code)
+   Address: `0x91df53EbBD20bcd0A13Bb2033f1A8418b0884e6f`  
+   [View Contract](https://sepolia.scrollscan.com/address/0x91df53EbBD20bcd0A13Bb2033f1A8418b0884e6f#code)
 
 
 

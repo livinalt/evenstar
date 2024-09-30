@@ -22,6 +22,8 @@ contract EvenStar {
     mapping(uint256 => User) registeredUserID; 
     mapping(address => uint256) userBalance;
 
+    enum EventCategorys { None, Education, Liesure, Brainstorm, Lifestyle, Sport }
+
     struct Program {
         uint256 id;
         string title;
@@ -32,8 +34,10 @@ contract EvenStar {
         uint256 duration;
         string url;
         uint256 ticket;  
+        EventCategorys category;  
         bool isActive;
         address creator;
+        string eventArt;
     }
 
     Program[] allPrograms;
@@ -77,68 +81,94 @@ contract EvenStar {
         emit UserRegistered(msg.sender, id);
     }
 
-    function createEvent(
-        string memory _title, 
-        string memory _desc, 
-        uint256 _date, 
-        uint256 _time, 
-        string memory _location, 
-        uint256 _duration,
-        string memory _url,
-        uint256 _ticket
-    ) external {
-        uint256 id = allPrograms.length;
-
-        Program memory newProgram = Program(id, _title, _desc, _date, _time, _location, _duration, _url, _ticket, true, msg.sender);
-        allPrograms.push(newProgram);
-        registeredPrograms[id] = newProgram;
-        programsTitle[_title] = newProgram;
-
-        emit EventCreated(id, _title, msg.sender);
-
-    }
-
-    function updateProgram(
-    uint256 id, 
+   function createEvent(
     string memory _title, 
     string memory _desc, 
     uint256 _date, 
     uint256 _time, 
     string memory _location, 
-    uint256 _duration, 
-    string memory _url, 
-    uint256 _ticket
+    uint256 _duration,
+    string memory _url,
+    uint256 _ticket,
+    EventCategorys _category,
+    string memory _eventArt
 ) external {
+    // Ensure the user is registered
+    require(hasRegistered[msg.sender].isRegistered, "You need to register before creating an event");
 
-    require(id < allPrograms.length, "Invalid program ID");
+    uint256 id = allPrograms.length + 1;
 
-    Program storage program = allPrograms[id];
-    
-    require(program.creator == msg.sender || msg.sender == owner, "You are not the creator of this event");
+    Program memory newProgram = Program(
+        id, 
+        _title, 
+        _desc, 
+        _date, 
+        _time, 
+        _location, 
+        _duration, 
+        _url, 
+        _ticket, 
+        _category, 
+        true, 
+        msg.sender, 
+        _eventArt
+    );
 
-    program.title = _title;
-    program.desc = _desc;
-    program.date = _date;
-    program.time = _time;
-    program.location = _location;
-    program.duration = _duration;
-    program.url = _url;
-    program.ticket = _ticket;
+    allPrograms.push(newProgram);
+    registeredPrograms[id] = newProgram;
+    programsTitle[_title] = newProgram;
 
-    programsTitle[_title] = program;
+    emit EventCreated(id, _title, msg.sender);
 }
 
 
+    function updateProgram(
+        uint256 id, 
+        string memory _title, 
+        string memory _desc, 
+        uint256 _date, 
+        uint256 _time, 
+        string memory _location, 
+        uint256 _duration, 
+        string memory _url, 
+        uint256 _ticket,
+        string memory _eventArt
+    ) external {
+        require(id < allPrograms.length, "Invalid program ID");
+
+        Program storage program = allPrograms[id];
+
+        require(program.creator == msg.sender, "You are not the creator of this event");
+
+        program.title = _title;
+        program.desc = _desc;
+        program.date = _date;
+        program.time = _time;
+        program.location = _location;
+        program.duration = _duration;
+        program.url = _url;
+        program.ticket = _ticket;
+        program.eventArt = _eventArt;
+
+        programsTitle[_title] = program;
+    }
+
     function eventSignup(uint256 id) external {
-    require(id != 0, "Invalid Id");
+    require(id != 0, "Invalid event ID");
+    require(id < allPrograms.length, "Invalid event ID");
 
     Program storage program = allPrograms[id];
-
     require(program.isActive, "Event is not active");
 
+    // Check if the user has already signed up for the event
+    address[] storage attendees = programAttendees[id];
+    for (uint256 i = 0; i < attendees.length; i++) {
+        require(attendees[i] != msg.sender, "User has already signed up for this event");
+    }
+
+    // If there's a ticket price, deduct the tokens from the user
     if (program.ticket > 0) {
         uint256 ticketWithDecimals = program.ticket * (10**18);
-
         require(IERC20(paymentToken).balanceOf(msg.sender) >= ticketWithDecimals, "Insufficient token balance");
         require(IERC20(paymentToken).transferFrom(msg.sender, address(this), ticketWithDecimals), "Token transfer failed");
 
@@ -146,18 +176,18 @@ contract EvenStar {
         uint256 contractShare = ticketWithDecimals - creatorShare;
 
         require(IERC20(paymentToken).transfer(program.creator, creatorShare), "Transfer to creator failed");
-
         contractBalance += contractShare;
     }
 
+    // Register the user as an attendee for the event
     programAttendees[id].push(msg.sender);
 
     emit EventSignup(id, msg.sender);
 }
 
-    
 
     function archiveEvent(uint256 id) external onlyOwner {
+        require(id < allPrograms.length, "Invalid program ID");
 
         Program storage selectedProgram = allPrograms[id];
 
@@ -166,23 +196,20 @@ contract EvenStar {
         archivePrograms.push(selectedProgram);
         isArchived[id] = true;
         selectedProgram.isActive = false;
+
+        emit EventArchived(id);
     }
 
     function removeEvent(uint256 id) external onlyOwner {
         require(id < allPrograms.length, "Invalid program ID");
-
         delete allPrograms[id];
+        emit EventRemoved(id);
     }
 
     function searchEvent(uint256 id, string memory _title) external view returns (Program memory) {
         if (id < allPrograms.length && allPrograms[id].id == id) {
-
             return allPrograms[id];
-
-        } 
-        
-        else if (bytes(_title).length > 0) {
-
+        } else if (bytes(_title).length > 0) {
             return programsTitle[_title];
         }
 
@@ -194,11 +221,12 @@ contract EvenStar {
     }
 
     function proofOfAttendance(uint256 id) external {
-        require(id != 0, "Invalid Id");
+        require(id != 0, "Invalid event ID");
         require(id < allPrograms.length, "Invalid event ID");
         require(programCompleted[id], "Event is still ongoing");
 
         bool isAttendee = false;
+
         for (uint256 i = 0; i < programAttendees[id].length; i++) {
             if (programAttendees[id][i] == msg.sender) {
                 isAttendee = true;
@@ -209,9 +237,7 @@ contract EvenStar {
         require(isAttendee, "You did not attend this event");
 
         IEvenStarPOA(evenStarPOA).transferTokenFromContract(msg.sender, id);
-
     }
-
 
     function searchFreeEvents() external view returns (Program[] memory) {
         uint256 freeEventCount = 0;
@@ -257,18 +283,48 @@ contract EvenStar {
         return paidEvents;
     }
 
-    function getUserBalance(address _address) external  onlyOwner view returns(uint256){
-        require(_address != address(0), "Address zero detected");
+    function getAllEvents() external view returns (Program[] memory) {
+        return allPrograms;
+    }
+
+    function getUserBalance(address _address) external view onlyOwner returns (uint256) {
+        require(_address != address(0), "Invalid address");
         return userBalance[_address];
     }
 
-    function getUserBalance() external view returns(uint256){
-        require(msg.sender != address(0), "Address zero detected");
+    function getUserBalance() external view returns (uint256) {
         return userBalance[msg.sender];
     }
 
-    function checkContractBalance() external onlyOwner view returns(uint256){
-        return contractBalance;
+    function getEventAttendees(uint256 eventId) external view returns (address[] memory) {
+        require(eventId != 0, "Invalid event ID");
+        require(eventId < allPrograms.length, "Invalid event ID");
+
+        return programAttendees[eventId];
     }
+
+    function getEventsByCategory(EventCategorys _category) external view returns (Program[] memory) {
+        uint256 matchingEventCount = 0;
+
+        for (uint256 i = 0; i < allPrograms.length; i++) {
+            if (allPrograms[i].category == _category && allPrograms[i].isActive) {
+                matchingEventCount++;
+            }
+        }
+
+        // This array stores matching events
+        Program[] memory matchingEvents = new Program[](matchingEventCount);
+        uint256 index = 0;
+
+        for (uint256 i = 0; i < allPrograms.length; i++) {
+            if (allPrograms[i].category == _category && allPrograms[i].isActive) {
+                matchingEvents[index] = allPrograms[i];
+                index++;
+            }
+        }
+
+        return matchingEvents;
+    }
+
 
 }
