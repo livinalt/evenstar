@@ -4,6 +4,7 @@ export default function Page() {
   return (
     <section className="pb-24">
       <CreateEventForm />
+      <span></span>
     </section>
   );
 }
