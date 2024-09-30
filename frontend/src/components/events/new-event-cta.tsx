@@ -7,7 +7,7 @@ import { Icons } from "../icons";
 export function NewEventCta() {
   return (
     <section className="bg-white">
-      <div className="max-w-screen-xl px-10 py-[70px]">
+      <div className="max-w-screen-xl mx-auto px-10 py-[70px]">
         <div className="bg-blue-2 flex items-center justify-between rounded-[16px] px-14 py-[70px]">
           <div className="w-[637px]">
             <Heading3 className="w-[521px] font-bold text-[#282A31]">
