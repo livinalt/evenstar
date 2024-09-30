@@ -45,7 +45,7 @@ function NavItem({ item }: { item: INavbar }) {
       className={clsx(
         "block bg-transparent py-5 pl-[50px] text-base font-medium hover:bg-blue-0 hover:text-white",
         {
-          "bg-[#3D70FF] text-white": pathname === href,
+          "bg-blue-500 text-white": pathname === href,
         },
       )}
     >
