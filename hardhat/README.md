@@ -6,7 +6,7 @@ Welcome to the **EvenStar Event App**, the ultimate platform designed to revolut
 
 EvenStar leverages blockchain technology to provide a secure, transparent, and user-friendly platform for event management. With smart contracts ensuring trust and reliability, attendees can enjoy a hassle-free experience while organizers can efficiently manage their events.
 
-## 🛠 Features
+## Features
 
 - **Secure Ticketing**: Utilizing blockchain for transparent ticket issuance and ownership. Each ticket is issued as a unique digital asset, ensuring that ownership is verifiable and immutable. This drastically reduces the risk of fraud and scalping, giving attendees peace of mind.
   
@@ -48,10 +48,7 @@ ETHERSCAN_API_KEY=your_etherscan_api_key
 ```
 
 ### Deploying to Scroll Sepolia
-
-
-
-## 🔗 Contract Addresses & Verification
+#### Contract Addresses & Verification
 
 The contracts were deployed on Scroll Sepolia Testnet using the with Alchemy as the RPC provider. Here are the deployed contract addresses along with their verification links on the Scroll Sepolia test network:
 
@@ -69,7 +66,7 @@ The contracts were deployed on Scroll Sepolia Testnet using the with Alchemy as 
 
 
 
-### 🛠 Hardhat Configuration
+### Hardhat Configuration
 
 The EvenStar Event App utilizes **Hardhat** as our development framework. The configuration includes settings for the Scroll Sepolia network.
 
@@ -122,17 +119,17 @@ const config: HardhatUserConfig = {
 export default config;
 ```
 
-## 💡 Future Enhancements
+## Future Enhancements
 
 - **Enhanced Analytics**: Provide insights for event organizers on attendance and engagement.
 - **User Profiles**: Allow users to manage their event history and preferences.
 - **In-app Wallet**: Implement a wallet feature to manage tokens directly within the app.
 - **Mainnet Launch**: Deploying EvenStar on the Scroll Mainnet for real use.
 
-## 🤝 Contributing
+## Contributing
 
 If you'd like to contribute, please fork the repository and submit a pull request with your changes.
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License.
