@@ -1,15 +1,14 @@
-// This setup uses Hardhat Ignition to manage smart contract deployments.
-// Learn more about it at https://hardhat.org/ignition
 
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 
 
 const EvenStarModule = buildModule("EvenStarModule", (m) => {
 
-  const evenStarPOA = "0x223b2DdbF57493ED5B0bC5FeB8d6660fbB698f0C";
-  const paymentToken = "0x2913ba4D9d925BC05006F529eEcb96D0BAd9C6D3";
+  const evenStarPOA = "0xF2fF218f44Ee31aE1dFb22104582c6a1045F429F";
+  const paymentToken = "0xa2E7552a5be79F69F46b39f901ad00D649F9de65";
+  const owner = "0x8F4F05d64D6d670899a7EA9427900Aa98AC6b0E8";
 
-  const evenStar = m.contract("EvenStar", [evenStarPOA, paymentToken]);
+  const evenStar = m.contract("EvenStar", [evenStarPOA, paymentToken, owner]);
 
   return { evenStar };
 });
@@ -17,10 +16,3 @@ const EvenStarModule = buildModule("EvenStarModule", (m) => {
 export default EvenStarModule;
 
 
-// MockUSDTModule#MockUSDT - 0x2913ba4D9d925BC05006F529eEcb96D0BAd9C6D3
-
-// EvenStarPOAModule#EvenStarPOA - 0x223b2DdbF57493ED5B0bC5FeB8d6660fbB698f0C
-
-// EvenStarModule#EvenStar - 0xb2F2A39fB5e334f78C3Ea76E0A53e5C3c8C12542
-
-// https://sepolia.scrollscan.com/address/0xb2F2A39fB5e334f78C3Ea76E0A53e5C3c8C12542#code
