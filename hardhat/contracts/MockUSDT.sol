@@ -7,12 +7,11 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract MockUSDT is ERC20, Ownable {
     constructor(address initialOwner)
-        ERC20("MockUSDT", "mUSDT")
+        ERC20("Mock USDT", "mUSDT")
         Ownable(initialOwner)
     {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
     }
-    
 }
