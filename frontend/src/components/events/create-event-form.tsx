@@ -11,7 +11,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, Upload } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -30,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CloudUpload, Paperclip } from "lucide-react";
+import { Paperclip } from "lucide-react";
 import {
   FileInput,
   FileUploader,
@@ -58,7 +57,8 @@ export default function CreateEventForm() {
     maxFiles: 5,
     maxSize: 1024 * 1024 * 4,
     multiple: true,
-  }; // Insert constants here
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -81,16 +81,19 @@ export default function CreateEventForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto max-w-3xl space-y-8 py-10"
+        className="mx-auto max-w-3xl space-y-[12px]"
       >
         <FormField
           control={form.control}
           name="eventDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Input placeholder="Event Title" {...field} />
+                <Input
+                  placeholder="Event Title"
+                  {...field}
+                  className="h-14 rounded-[16px] bg-blue-2"
+                />
               </FormControl>
 
               <FormMessage />
@@ -103,9 +106,12 @@ export default function CreateEventForm() {
           name="eventDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Input placeholder="Describe Event" {...field} />
+                <Input
+                  placeholder="Describe Event"
+                  {...field}
+                  className="h-14 rounded-[16px] bg-blue-2"
+                />
               </FormControl>
 
               <FormMessage />
@@ -119,7 +125,11 @@ export default function CreateEventForm() {
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Input placeholder="Location" {...field} />
+                <Input
+                  placeholder="Location"
+                  {...field}
+                  className="h-14 rounded-[16px] bg-blue-2"
+                />
               </FormControl>
 
               <FormMessage />
@@ -131,9 +141,12 @@ export default function CreateEventForm() {
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Input placeholder="URL" {...field} />
+                <Input
+                  placeholder="URL"
+                  {...field}
+                  className="h-14 rounded-[16px] bg-blue-2"
+                />
               </FormControl>
 
               <FormMessage />
@@ -146,9 +159,13 @@ export default function CreateEventForm() {
           name="time"
           render={({ field }) => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
-                <Input placeholder="URL" type="time" {...field} />
+                <Input
+                  placeholder="URL"
+                  type="time"
+                  {...field}
+                  className="h-14 rounded-[16px] bg-blue-2"
+                />
               </FormControl>
 
               <FormMessage />
@@ -156,132 +173,143 @@ export default function CreateEventForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <Popover>
-                <PopoverTrigger asChild>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "h-14 w-full rounded-[16px] bg-blue-2 pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground",
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormItem>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] pl-3 text-left font-normal",
-                        !field.value && "text-muted-foreground",
-                      )}
-                    >
-                      {field.value ? (
-                        format(field.value, "PPP")
-                      ) : (
-                        <span>Date</span>
-                      )}
-                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                    </Button>
+                    <SelectTrigger className="h-14 rounded-[16px] bg-blue-2">
+                      <SelectValue placeholder="Duration" />
+                    </SelectTrigger>
                   </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    onSelect={field.onChange}
-                    disabled={(date) =>
-                      date > new Date() || date < new Date("1900-01-01")
-                    }
-                    initialFocus
+                  <SelectContent>
+                    <SelectItem value="60">1 hour</SelectItem>
+                    <SelectItem value="90">1 hr 30 mins</SelectItem>
+                    <SelectItem value="120">2 hours</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="category"
+            render={({ field }) => (
+              <FormItem>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="h-14 rounded-[16px] bg-blue-2">
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="education">Education</SelectItem>
+                    <SelectItem value="leisure">Leisure</SelectItem>
+                    <SelectItem value="brainstorm">Brainstorm</SelectItem>
+                    <SelectItem value="lifestyle">Lifestyle</SelectItem>
+                    <SelectItem value="sport">Sport</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="ticketPrice"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input
+                    placeholder="Ticket Price"
+                    {...field}
+                    className="h-14 rounded-[16px] bg-blue-2"
                   />
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Enter Placeholder" />
-                  </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  <SelectItem value="60">1 hour</SelectItem>
-                  <SelectItem value="90">1 hr 30 mins</SelectItem>
-                  <SelectItem value="120">2 hours</SelectItem>
-                </SelectContent>
-              </Select>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="category"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Enter Placeholder" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
-                  <SelectItem value="education">Education</SelectItem>
-                  <SelectItem value="leisure">Leisure</SelectItem>
-                  <SelectItem value="brainstorm">Brainstorm</SelectItem>
-                  <SelectItem value="lifestyle">Lifestyle</SelectItem>
-                  <SelectItem value="sport">Sport</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="ticketPrice"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel></FormLabel>
-              <FormControl>
-                <Input placeholder="Ticket Price" {...field} />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
           name="eventImage"
           render={() => (
             <FormItem>
-              <FormLabel></FormLabel>
               <FormControl>
                 <FileUploader
                   value={files}
                   onValueChange={setFiles}
                   dropzoneOptions={dropZoneConfig}
-                  className="relative rounded-lg bg-background p-2"
+                  className="relative mb-3 h-[104px] rounded-[16px] bg-blue-2 p-2"
                 >
                   <FileInput
                     id="fileInput"
                     className="outline-dashed outline-1 outline-slate-500"
                   >
                     <div className="flex w-full flex-col items-center justify-center pb-4 pt-3">
-                      <CloudUpload />
+                      <Upload />
+                      <span>Upload Event Image</span>
                     </div>
                   </FileInput>
                   <FileUploaderContent>
@@ -301,7 +329,9 @@ export default function CreateEventForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" size={"lg"} className="h-[50px] w-full">
+          Create Event
+        </Button>
       </form>
     </Form>
   );

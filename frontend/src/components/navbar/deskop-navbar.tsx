@@ -30,7 +30,7 @@ export function DesktopNavbar() {
         <div className="flex items-center gap-12">
           <Link
             href="/events/create"
-            className="text-base font-medium text-[#414141] hover:text-blue-1"
+            className={`text-base font-medium text-[#414141] hover:text-blue-1 ${pathname.includes("/events/create") && "text-blue-1"}`}
           >
             Create Event
           </Link>
